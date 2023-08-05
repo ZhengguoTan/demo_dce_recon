@@ -4,13 +4,9 @@
 
 * Interactive code demo:
 
-    * DCE MRI
+    * DCE MRI: [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/ZhengguoTan/demo_dce_recon/blob/main/demo_dce_recon_temptv.ipynb)
 
-        [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/ZhengguoTan/demo_dce_recon/blob/main/demo_dce_recon_temptv.ipynb)
-
-    * Motion Phantom
-
-        [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/ZhengguoTan/demo_dce_recon/blob/main/demo_motion_phantom.ipynb)
+    * Motion Phantom: [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/ZhengguoTan/demo_dce_recon/blob/main/demo_motion_phantom.ipynb)
 
 
 ## Reference:
