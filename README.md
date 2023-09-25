@@ -9,7 +9,43 @@
     * Motion Phantom: [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/ZhengguoTan/demo_dce_recon/blob/main/demo_motion_phantom.ipynb)
 
 
-## Reference:
+* How to run on your local computer?
+
+    All the jupyter notebooks provide installation instructions and are designed such that you can simply "click and go". If you want to run the script `dce_recon.py` on your local computer, you need to firstly install the required python environments, which I suggest to use `conda`.
+
+    Here are the steps:
+
+    1. create a new `conda` environment in ther terminal:
+
+    ```bash
+    conda create -n dce python=3.9
+    conda activate dce
+    which python  # to validate the python is under the environment
+    ```
+
+    ```bash
+    python -m pip install numpy
+    python -m pip install pywavelets
+    python -m pip install numba
+    python -m pip install scipy
+    python -m pip install tqdm
+    ```
+
+    2. clone and install `sigpy` in the terminal:
+
+    ```bash
+    git clone https://github.com/ZhengguoTan/sigpy.git
+    cd sigpy
+    python -m pip install -e .
+    ```
+
+    3. Now you should be able to run the script:
+
+    ```bash
+    python dce_recon.py --data 'GeneBreast_CCCTrio#F636203.h5' --spokes_per_frame 12 --slice_idx 96 --slice_inc 1
+    ```
+
+## References:
 
 * Zhang S, Block KT, Frahm J. [Magnetic resonance imaging in real time: advances using radial FLASH](https://doi.org/10.1002/jmri.21987). J Magn Reson Imaging 2010;31:101-109.
 
