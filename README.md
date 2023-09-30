@@ -18,19 +18,21 @@
     1. create a new `conda` environment in ther terminal:
 
     ```bash
-    conda create -n dce python=3.9
+    conda create -n dce python=3.9.16
     conda activate dce
     which python  # to validate the python is under the environment
     ```
 
     ```bash
     python -m pip install h5py
-    python -m pip install numpy==1.24
     python -m pip install pywavelets
     python -m pip install numba
     python -m pip install scipy
     python -m pip install tqdm
-    conda install -c anaconda cupy  # if you have GPU
+    python -m pip install torch
+    python -m pip install cupy
+    conda install -c conda-forge cupy cudnn cutensor nccl  # if you have GPU
+    conda install -c conda-forge numpy=1.24
     ```
 
     2. clone and install `sigpy` in the terminal:
