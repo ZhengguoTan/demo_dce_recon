@@ -24,11 +24,13 @@
     ```
 
     ```bash
-    python -m pip install numpy
+    python -m pip install h5py
+    python -m pip install numpy==1.24
     python -m pip install pywavelets
     python -m pip install numba
     python -m pip install scipy
     python -m pip install tqdm
+    conda install -c anaconda cupy  # if you have GPU
     ```
 
     2. clone and install `sigpy` in the terminal:
