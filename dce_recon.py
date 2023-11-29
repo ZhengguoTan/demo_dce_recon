@@ -1,6 +1,7 @@
 import argparse
 import h5py
 import os
+import pathlib
 
 import numpy as np
 import sigpy as sp
@@ -76,10 +77,20 @@ if __name__ == "__main__":
     parser.add_argument('--slice_inc', type=int, default=1,
                         help='number of slices to be reconstructed')
 
+    parser.add_argument('--center_partition', type=int, default=31,
+                        help='the center partition index [default: 31]')
+
+    parser.add_argument('--images_per_slab', type=int, default=192,
+                        help='total number of images per slab [default: 192]')
+
     args = parser.parse_args()
 
     device = sp.Device(0 if torch.cuda.is_available() else -1)
     print('> device ', device)
+
+    OUT_DIR = DIR + '/' + args.data
+    OUT_DIR = OUT_DIR.split('.h5')[0]
+    pathlib.Path(OUT_DIR).mkdir(parents=True, exist_ok=True)
 
     # %% read in k-space data
     print('> read in data ', args.data)
@@ -91,13 +102,15 @@ if __name__ == "__main__":
     ksp = np.transpose(ksp, (3, 2, 0, 1))
 
     # zero-fill the slice dimension
-    ksp_zf = sp.resize(ksp, oshape=[192] + list(ksp.shape[1:]))
+    partitions = ksp.shape[0]
+    shift = int(args.images_per_slab / 2 - args.center_partition)
+
+    ksp_zf = np.zeros_like(ksp, shape=[args.images_per_slab] + list(ksp.shape[1:]))
+    ksp_zf[shift : shift + partitions, ...] = ksp
+
     ksp_zf = sp.fft(ksp_zf, axes=(0,))
 
     N_slices, N_coils, N_spokes, N_samples = ksp_zf.shape
-
-
-
 
     base_res = N_samples // 2
 
@@ -154,6 +167,6 @@ if __name__ == "__main__":
         R1 = sp.to_device(R1)
 
         # save recon files
-        f = h5py.File(DIR + '/reco_slice' + str(s).zfill(3) + '.h5', 'w')
+        f = h5py.File(OUT_DIR + '/reco_slice' + str(s).zfill(3) + '.h5', 'w')
         f.create_dataset('temptv', data=R1)
         f.close()
