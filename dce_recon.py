@@ -167,6 +167,8 @@ if __name__ == "__main__":
         R1 = sp.to_device(R1)
 
         # save recon files
-        f = h5py.File(OUT_DIR + '/reco_slice' + str(s).zfill(3) + '.h5', 'w')
+        f = h5py.File(OUT_DIR + '/reco_slice_' + str(s).zfill(3) + '.h5', 'w')
         f.create_dataset('temptv', data=R1)
+        f.create_dataset('spokes_per_frame', data=args.spokes_per_frame)
+        f.create_dataset('images_per_slab', data=args.images_per_slab)
         f.close()
