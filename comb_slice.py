@@ -33,15 +33,16 @@ if __name__ == "__main__":
 
         print('> slice ' + str(s).zfill(3))
 
-        fstr = OUT_DIR + '/reco_slice' + str(s).zfill(3)
+        fstr = OUT_DIR + '/reco_slice_' + str(s).zfill(3)
 
         f = h5py.File(fstr + '.h5', 'r')
         acq_slices.append(f['temptv'][:])
+        spokes_per_frame = f['spokes_per_frame'][()]
         f.close()
 
     acq_slices = np.array(acq_slices)
     print('> acq_slices shape: ', acq_slices.shape)
 
-    f = h5py.File(OUT_DIR + '/reco.h5', 'w')
+    f = h5py.File(OUT_DIR + '/reco_spokes' + str(spokes_per_frame).zfill(2) + '.h5', 'w')
     f.create_dataset('temptv', data=acq_slices)
     f.close()
