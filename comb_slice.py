@@ -10,7 +10,7 @@ DIR = os.path.dirname(os.path.realpath(__file__))
 if __name__ == "__main__":
 
     # %% parse
-    parser = argparse.ArgumentParser(description='run dce reconstruction.')
+    parser = argparse.ArgumentParser(description='combine all dce slices.')
 
     parser.add_argument('--data',
                         default='GeneBreast_CCCTrio#F636203.h5',

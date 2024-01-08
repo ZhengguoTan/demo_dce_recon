@@ -1,8 +1,13 @@
 import argparse
+import datetime
 import h5py
 import os
 import pathlib
 import pydicom
+# from pydicom import Dataset
+from pydicom.datadict import add_dict_entry
+# from pydicom.dataset import FileDataset, FileMetaDataset
+# from pydicom.uid import UID
 
 import numpy as np
 
@@ -22,8 +27,14 @@ if __name__ == "__main__":
                         default='/reco_spokes13.h5',
                         help='radial k-space data')
 
+    parser.add_argument('--partitions', type=int, default=83,
+                        help='total number of partitions')
+
     parser.add_argument('--spokes_per_frame', type=int, default=12,
                         help='number of spokes per frame')
+
+    parser.add_argument('--TE', type=float, default=1.8,
+                        help='echo time (ms)')
 
     parser.add_argument('--TR', type=float, default=4.87,
                         help='repetition time (ms)')
@@ -32,14 +43,14 @@ if __name__ == "__main__":
 
     # %%
     # read in the original dicom file
-    dcm_data = pydicom.dcmread(args.dcm)
+    ds = pydicom.dcmread(args.dcm)
 
 
     OUT_DIR = DIR + '/' + args.h5py
     OUT_DIR = OUT_DIR.split('.h5')[0]
     pathlib.Path(OUT_DIR).mkdir(parents=True, exist_ok=True)
 
-    f = h5py.File(DIR + args.h5py, 'r')
+    f = h5py.File(DIR + '/' + args.h5py, 'r')
     R = f['temptv'][:]
     f.close()
 
@@ -53,12 +64,32 @@ if __name__ == "__main__":
     print(np.amin(R))
     print(np.amax(R))
 
+
+    slice_thickness = ds[0x00180050].value
+    print('> slice_thcikness: ', slice_thickness)
+
+
     for z in range(N_z):
         for t in range(N_t):
             print('> slice ' + str(z).zfill(3) + ' frame ' + str(t).zfill(3))
-            dcm_data.PixelData = R[z, t].astype(np.uint16).tobytes()
-            # timestamp
-            dcm_data.add_new([0x0018, 0x0088], 'DS', str(t * N_z * args.TR))
-            dcm_data.save_as(OUT_DIR + '/slice_' + str(z).zfill(3) + '_frame_' + str(t).zfill(3) + '.dcm')
+
+            # Set creation date/time
+            dt = datetime.datetime.now()
+            ds.ContentDate = dt.strftime('%Y%m%d')
+            timeStr = dt.strftime('%H%M%S.%f')  # long format with micro seconds
+            ds.ContentTime = timeStr
+
+            ds.PixelData = R[z, t].astype(np.uint16).tobytes()
+            ds['PixelData'].VR = 'OW'
+            ds.is_little_endian = True
+            ds.is_implicit_VR = False
+
+            ds[0x00201041].value = (- N_z // 2 + z) * slice_thickness  # SliceLocation
+            ds[0x00200013].value = t + 1  # InstanceNumber
+
+            add_dict_entry(0x00186666, "DS", "TimeStamp", "Time Stamp", VM='1')
+            ds.TimeStamp = str(t * N_z * args.TR)
+
+            ds.save_as(OUT_DIR + '/slice_' + str(z).zfill(3) + '_frame_' + str(t).zfill(3) + '.dcm')
 
     print('> done')

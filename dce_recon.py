@@ -90,7 +90,7 @@ if __name__ == "__main__":
 
     OUT_DIR = DIR + '/' + args.data
     OUT_DIR = OUT_DIR.split('.h5')[0]
-    pathlib.Path(OUT_DIR).mkdir(parents=True, exist_ok=True)
+    pathlib.Path(OUT_DIR + '_processed').mkdir(parents=True, exist_ok=True)
 
     # %% read in k-space data
     print('> read in data ', args.data)
