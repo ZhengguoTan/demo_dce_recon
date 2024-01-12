@@ -1,5 +1,5 @@
 import argparse
-import datetime
+from datetime import datetime, timedelta
 import h5py
 import os
 import pathlib
@@ -26,6 +26,9 @@ if __name__ == "__main__":
     parser.add_argument('--h5py',
                         default='/reco_spokes13.h5',
                         help='radial k-space data')
+
+    parser.add_argument('--spokes_per_frame', type=int, default=13,
+                        help='number of spokes per frame')
 
     parser.add_argument('--partitions', type=int, default=83,
                         help='total number of partitions')
@@ -70,10 +73,10 @@ if __name__ == "__main__":
         for z in range(N_z):
 
             # Set creation date/time
-            dt = datetime.datetime.now()
+            dt = datetime.now()
             ds.ContentDate = dt.strftime('%Y%m%d')
-            timeStr = dt.strftime('%H%M%S.%f')  # long format with micro seconds
-            ds.ContentTime = timeStr
+            dt_delay = dt + timedelta(minutes=2.5 * z / N_z)
+            ds.ContentTime = dt_delay.strftime('%H%M%S.%f')
 
             ds.PixelData = R[z, t].astype(np.uint16).tobytes()
             ds['PixelData'].VR = 'OW'
@@ -88,7 +91,7 @@ if __name__ == "__main__":
             ds.ImageOrientationPatient = [1.0, 0.0, 0.0, 0.0, 1.0, 0.0]
 
             add_dict_entry(0x00186666, "DS", "TimeStamp", "Time Stamp", VM='1')
-            ds.TimeStamp = str(t * N_z * args.TR)
+            ds.TimeStamp = str(t * N_z * args.TR * args.spokes_per_frame)
 
             print('> slice ' + str(z).zfill(3) + ' frame ' + str(t).zfill(3) + ' InstanceNumber ' + str(t * N_z + (z + 1)).zfill(4))
 
