@@ -22,7 +22,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     OUT_DIR = DIR + '/' + args.data
-    OUT_DIR = OUT_DIR.split('.h5')[0]
+    OUT_DIR = OUT_DIR.split('.h5')[0] + '_processed'
 
     assert os.path.exists(OUT_DIR), ['The directory ' + OUT_DIR + ' does not exist.']
 

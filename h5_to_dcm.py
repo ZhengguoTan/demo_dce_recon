@@ -30,9 +30,6 @@ if __name__ == "__main__":
     parser.add_argument('--partitions', type=int, default=83,
                         help='total number of partitions')
 
-    parser.add_argument('--spokes_per_frame', type=int, default=12,
-                        help='number of spokes per frame')
-
     parser.add_argument('--TE', type=float, default=1.8,
                         help='echo time (ms)')
 
@@ -69,9 +66,8 @@ if __name__ == "__main__":
     print('> slice_thcikness: ', slice_thickness)
 
 
-    for z in range(N_z):
-        for t in range(N_t):
-            print('> slice ' + str(z).zfill(3) + ' frame ' + str(t).zfill(3))
+    for t in range(N_t):
+        for z in range(N_z):
 
             # Set creation date/time
             dt = datetime.datetime.now()
@@ -84,11 +80,17 @@ if __name__ == "__main__":
             ds.is_little_endian = True
             ds.is_implicit_VR = False
 
+            ds[0x00100020].value = 'trial'  # PatientID
             ds[0x00201041].value = (- N_z // 2 + z) * slice_thickness  # SliceLocation
-            ds[0x00200013].value = t + 1  # InstanceNumber
+            ds[0x00200013].value = t * N_z + (z + 1)  # InstanceNumber
+            ds[0x00200010].value = '1'  # StudyID
+            ds[0x00080018].value = str(t * N_z + (z + 1))  # Unique SOP Instance UID !
+            ds.ImageOrientationPatient = [1.0, 0.0, 0.0, 0.0, 1.0, 0.0]
 
             add_dict_entry(0x00186666, "DS", "TimeStamp", "Time Stamp", VM='1')
             ds.TimeStamp = str(t * N_z * args.TR)
+
+            print('> slice ' + str(z).zfill(3) + ' frame ' + str(t).zfill(3) + ' InstanceNumber ' + str(t * N_z + (z + 1)).zfill(4))
 
             ds.save_as(OUT_DIR + '/slice_' + str(z).zfill(3) + '_frame_' + str(t).zfill(3) + '.dcm')
 
