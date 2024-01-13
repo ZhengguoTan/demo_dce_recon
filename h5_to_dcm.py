@@ -56,7 +56,7 @@ if __name__ == "__main__":
 
     R = np.squeeze(abs(R))
 
-    R = np.flip(R, axis=(-2, )) # upward orientation
+    R = np.flip(R, axis=(-2, -1)) # upward orientation
 
     N_z, N_t, N_y, N_x = R.shape
     print(R.shape)
@@ -77,7 +77,7 @@ if __name__ == "__main__":
     for t in range(N_t):
 
         # 288 is the total number of spokes
-        dt_delay = dt + timedelta(minutes=2.5 * args.spokes_per_frame / 288)
+        dt_delay = dt + timedelta(minutes=t * 2.5 * args.spokes_per_frame / 288)
 
         for z in range(N_z):
 
@@ -92,6 +92,7 @@ if __name__ == "__main__":
 
             ds[0x00100020].value = 'trial'  # PatientID
             ds[0x00201041].value = (- N_z // 2 + z) * slice_thickness  # SliceLocation
+            ds.ImagePositionPatient = [-160.0, -160.0, float(z)]  # ImagePosition
             ds[0x00200013].value = t * N_z + (z + 1)  # InstanceNumber
             ds[0x00200010].value = '1'  # StudyID
             ds[0x00080018].value = str(t * N_z + (z + 1))  # Unique SOP Instance UID !
@@ -101,6 +102,7 @@ if __name__ == "__main__":
             ds.TimeStamp = str(t * N_z * args.TR * args.spokes_per_frame)
 
             print('> slice ' + str(z).zfill(3) + ' frame ' + str(t).zfill(3) + ' InstanceNumber ' + str(t * N_z + (z + 1)).zfill(4))
+            print('  ds.ImagePositionPatient: ', ds.ImagePositionPatient)
 
             ds.save_as(OUT_DIR + '/slice_' + str(z).zfill(3) + '_frame_' + str(t).zfill(3) + '.dcm')
 
