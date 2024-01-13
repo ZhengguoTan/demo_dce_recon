@@ -55,6 +55,9 @@ if __name__ == "__main__":
     f.close()
 
     R = np.squeeze(abs(R))
+
+    R = np.flip(R, axis=(-2, )) # upward orientation
+
     N_z, N_t, N_y, N_x = R.shape
     print(R.shape)
 
@@ -68,14 +71,18 @@ if __name__ == "__main__":
     slice_thickness = ds[0x00180050].value
     print('> slice_thcikness: ', slice_thickness)
 
+    # Set creation date/time
+    dt = datetime.now()
 
     for t in range(N_t):
+
+        # 288 is the total number of spokes
+        dt_delay = dt + timedelta(minutes=2.5 * args.spokes_per_frame / 288)
+
         for z in range(N_z):
 
-            # Set creation date/time
-            dt = datetime.now()
             ds.ContentDate = dt.strftime('%Y%m%d')
-            dt_delay = dt + timedelta(minutes=2.5 * z / N_z)
+
             ds.ContentTime = dt_delay.strftime('%H%M%S.%f')
 
             ds.PixelData = R[z, t].astype(np.uint16).tobytes()
