@@ -90,9 +90,11 @@ if __name__ == "__main__":
             ds.is_little_endian = True
             ds.is_implicit_VR = False
 
+            slice_loc = (- N_z // 2 + z) * slice_thickness
+
             ds[0x00100020].value = 'trial'  # PatientID
-            ds[0x00201041].value = (- N_z // 2 + z) * slice_thickness  # SliceLocation
-            ds.ImagePositionPatient = [-160.0, -160.0, float(z)]  # ImagePosition
+            ds[0x00201041].value = slice_loc  # SliceLocation
+            ds.ImagePositionPatient = [-160.0, -160.0, slice_loc]  # ImagePosition
             ds[0x00200013].value = t * N_z + (z + 1)  # InstanceNumber
             ds[0x00200010].value = '1'  # StudyID
             ds[0x00080018].value = str(t * N_z + (z + 1))  # Unique SOP Instance UID !
