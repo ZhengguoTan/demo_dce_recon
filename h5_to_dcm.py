@@ -84,7 +84,8 @@ if __name__ == "__main__":
             ds.ContentDate = dt.strftime('%Y%m%d')
 
             ds.ContentTime = dt_delay.strftime('%H%M%S.%f')
-
+            ds.AcquisitionTime  = dt_delay.strftime('%H%M%S.%f') 
+            
             ds.PixelData = R[z, t].astype(np.uint16).tobytes()
             ds['PixelData'].VR = 'OW'
             ds.is_little_endian = True
