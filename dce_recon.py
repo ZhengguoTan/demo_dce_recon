@@ -64,6 +64,10 @@ if __name__ == "__main__":
     # %% parse
     parser = argparse.ArgumentParser(description='run dce reconstruction.')
 
+    parser.add_argument('--dir', type=str,
+                        default=DIR,
+                        help='the directory where raw .h5 data is stored')
+
     parser.add_argument('--data',
                         default='GeneBreast_CCCTrio#F636203.h5',
                         help='radial k-space data')
@@ -91,10 +95,12 @@ if __name__ == "__main__":
     OUT_DIR = DIR + '/' + args.data
     OUT_DIR = OUT_DIR.split('.h5')[0] + '_processed'
     pathlib.Path(OUT_DIR).mkdir(parents=True, exist_ok=True)
+    print('> reconstructed files are stored in: ', OUT_DIR)
 
     # %% read in k-space data
-    print('> read in data ', args.data)
-    f = h5py.File(args.data, 'r')
+    IN_DIR = args.dir + '/' + args.data
+    print('> read in data ', IN_DIR)
+    f = h5py.File(IN_DIR, 'r')
     ksp_f = f['kspace'][:].T
     f.close()
 
